@@ -13,15 +13,18 @@ const mockUsers = [
 ]
 
 
+
 const mockProducts = [
     { name: "Mango", Price: "200", id: 1 },
     { name: "Banana", Price: "700", id: 2 },
     { name: "Apples", Price: "1000", id: 3 },
 ]
 
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 })
+
 
 
 app.get("/", (req, res) => {
@@ -40,6 +43,7 @@ app.get("/api/users", (req, res) => {
     const { query: { filter, value } } = req;
 
     // When filter and value are defined, filter mockUsers
+    // query params
     if (filter && value) {
         const filteredUsers = mockUsers.filter((user) => user[filter].includes(value));
         return res.send(filteredUsers);
@@ -48,24 +52,28 @@ app.get("/api/users", (req, res) => {
     return res.send(mockUsers);
 });
 
+
+
 app.post("/api/users", (req, res) => {
-    const {body } = req
-    const newUser = {id: mockUsers[mockUsers.length - 1].id + 1, ...body}
+    const { body } = req
+    const newUser = { id: mockUsers[mockUsers.length - 1].id + 1, ...body }
     mockUsers.push(newUser)
     return res.status(201).send(newUser);
 })
 
+
+
 app.put("/api/users/:id", (req, res) => {
-    const {body,params:{id},} = req;
+    const { body, params: { id } } = req;
 
     const parsedId = parseInt(id);
-    if(isNaN(parsedId)) return res.sendStatus(400)
+    if (isNaN(parsedId)) return res.sendStatus(400)
 
     const findUserIndex = mockUsers.findIndex((user) => user.id === parsedId)
 
-    if(findUserIndex === -1) return res.sendStatus(404)
+    if (findUserIndex === -1) return res.sendStatus(404)
 
-    mockUsers[findUserIndex] = { id: parsedId, ...body}
+    mockUsers[findUserIndex] = { id: parsedId, ...body }
 
     return res.sendStatus(200)
 })
@@ -84,6 +92,7 @@ app.get("/api/users/:id", (req, res) => {
 })
 
 
+
 app.get("/api/products", (req, res) => {
     try {
         if (!res.status(200)) {
@@ -94,6 +103,7 @@ app.get("/api/products", (req, res) => {
         console.log(error);
     }
 })
+
 
 
 app.get("/api/products/:id", (req, res) => {
