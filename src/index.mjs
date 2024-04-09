@@ -55,6 +55,21 @@ app.post("/api/users", (req, res) => {
     return res.status(201).send(newUser);
 })
 
+app.put("/api/users/:id", (req, res) => {
+    const {body,params:{id},} = req;
+
+    const parsedId = parseInt(id);
+    if(isNaN(parsedId)) return res.sendStatus(400)
+
+    const findUserIndex = mockUsers.findIndex((user) => user.id === parsedId)
+
+    if(findUserIndex === -1) return res.sendStatus(404)
+
+    mockUsers[findUserIndex] = { id: parsedId, ...body}
+
+    return res.sendStatus(200)
+})
+
 
 
 app.get("/api/users/:id", (req, res) => {
@@ -62,7 +77,7 @@ app.get("/api/users/:id", (req, res) => {
     const parsedId = parseInt(req.params.id)
     if (isNaN(parsedId)) return res.status(400).send({ message: `Bad request: ${req.params.id} is not a valid ID` })
 
-    const findUser = mockUser.find((user) => user.id === parsedId);
+    const findUser = mockUsers.find((user) => user.id === parsedId);
     if (!findUser) return res.status(404).send({ message: 'This user does not exists' })
 
     return res.status(200).send(findUser)
