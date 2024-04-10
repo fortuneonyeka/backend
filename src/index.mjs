@@ -92,17 +92,32 @@ app.patch("/api/users/:id", (req, res) => {
 
         return res.sendStatus(200)
 })
-
 app.delete("/api/users/:id", (req, res) => {
-    const {params:{id}} = req
-    const parsedId = parseInt(id);
-    if (isNaN(parsedId)) return res.sendStatus(400)
-    const findUserIndex = mockUsers.findIndex((user) => user.id === parsedId)
-    if(findUserIndex === -1) return res.statusCode(404)
-    mockUsers.splice(findUserIndex)
+    const userId = parseInt(req.params.id);
 
-    return res.sendStatus(200)
-})
+    // Find the index of the user with the specified ID
+    const userIndex = mockUsers.findIndex(user => user.id === userId);
+
+    // If the user with the specified ID is not found, return 404 Not Found
+    if (userIndex === -1) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Remove the user from the array
+    mockUsers.splice(userIndex, 1);
+
+    // Update the indices of remaining users in the array
+    mockUsers.forEach((user, index) => {
+        if (index >= userIndex) {
+            user.id = index + 1;
+        }
+    });
+
+    // Respond with a success message
+    return res.status(200).json({ message: 'User deleted successfully' });
+});
+
+
 
 
 
