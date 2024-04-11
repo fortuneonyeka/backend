@@ -20,6 +20,19 @@ const resolveIndexByUserId = (req, res, next) => {
 }
 
 
+const resolveIndexByProductId = (req, res, next) => {
+    const { params: { id } } = req;
+
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId)) return res.sendStatus(400)
+
+    const findProductIndex = mockProducts.findIndex((user) => user.id === parsedId)
+
+    if (findProductIndex === -1) return res.sendStatus(404)
+    req.findProductIndex = findProductIndex;
+    next()
+}
+
 
 const mockUsers = [
     { username: "fortune", Pod: "developer", id: 1 },
@@ -138,11 +151,10 @@ app.get("/api/products", (req, res) => {
 
 
 
-app.get("/api/products/:id", (req, res) => {
-    const parsedId = parseInt(req.params.id)
-    if (isNaN(parsedId)) return res.status(400).send({ message: `Bad request: ${req.params.id} is not a valid ID` })
-
-    const findProduct = mockProducts.find((product) => product.id === parsedId)
+app.get("/api/products/:id", resolveIndexByProductId, (req, res) => {
+    const {findProductIndex} = req
+    const findProduct = mockProducts[findProductIndex]
+   
     if (!findProduct) return res.status(404).send({ message: `This product does not exist` })
 
     return res.status(200).send(findProduct)
