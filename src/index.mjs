@@ -133,11 +133,6 @@ app.delete("/api/users/:id", resolveIndexByUserId, (req, res) => {
 
 
 
-
-
-
-
-
 app.get("/api/products", (req, res) => {
     try {
         if (!res.status(200)) {
