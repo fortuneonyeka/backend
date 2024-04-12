@@ -112,9 +112,15 @@ body("pod").isString().notEmpty().withMessage("pod must not be empty").isLength(
 
 
 
-app.put("/api/users/:id", resolveIndexByUserId, (req, res) => {
-    const { body, findUserIndex } = req;
-    mockUsers[findUserIndex] = { id: mockUsers[findUserIndex].id, ...body }
+app.put("/api/users/:id",[body("username").isString().notEmpty().withMessage("username cannot be empty").isLength({ min: 5, max: 32 }).withMessage("username must be 5-32 characters").isLowercase().withMessage("username must be in lowercase"), 
+body("pod").isString().notEmpty().withMessage("pod must not be empty").isLength({min:3, max:15}).withMessage("pod must be 3 - 15 characters").isLowercase().withMessage("pod must be in lowercase"),], resolveIndexByUserId, (req, res) => {
+    const { findUserIndex } = req;
+    const result = validationResult(req)
+    if(!result.isEmpty()) return res.status(400).send({errors: result.array()})
+
+    const data = matchedData(req)
+
+    mockUsers[findUserIndex] = { id: mockUsers[findUserIndex].id, ...data }
     return res.sendStatus(200)
 })
 
