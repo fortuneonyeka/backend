@@ -1,4 +1,5 @@
 import express from "express";
+import { query, validationResult, body } from "express-validator"
 
 const app = express()
 app.use(express.json())
@@ -32,7 +33,6 @@ const resolveIndexByProductId = (req, res, next) => {
     req.findProductIndex = findProductIndex;
     next()
 }
-
 
 
 const mockUsers = [
@@ -69,7 +69,9 @@ app.get("/", (req, res) => {
 
 
 
-app.get("/api/users", (req, res) => {
+app.get("/api/users", query("filter").isString().notEmpty().withMessage("Must not be empty").isLength({min:3, max:15}).withMessage("Must be at least 3-10 characters"), (req, res) => {
+  const result = validationResult(req)
+  console.log(result);
     const { query: { filter, value } } = req;
 
     // When filter and value are defined, filter mockUsers
@@ -87,6 +89,11 @@ app.get("/api/users/:id", resolveIndexByUserId, (req, res) => {
 
     const {findUserIndex} = req
     const findUser = mockUsers[findUserIndex] 
+    if (!findUser) return res.status(404).send({ message: 'This user does not exists' })
+
+    return res.status(200).send(findUser)
+})
+
 
 
 
@@ -129,7 +136,6 @@ app.delete("/api/users/:id", resolveIndexByUserId, (req, res) => {
 
 
 
-
 app.get("/api/products", (req, res) => {
     try {
         if (!res.status(200)) {
@@ -143,12 +149,10 @@ app.get("/api/products", (req, res) => {
 
 
 
-
 app.get("/api/products/:id", resolveIndexByProductId, (req, res) => {
     const {findProductIndex} = req
     const findProduct = mockProducts[findProductIndex]
    
-
     if (!findProduct) return res.status(404).send({ message: `This product does not exist` })
 
     return res.status(200).send(findProduct)
