@@ -1,5 +1,7 @@
 import express from "express";
-import { query, validationResult, body, matchedData } from "express-validator"
+import { query, validationResult, body, matchedData, checkSchema} from "express-validator"
+import { createValidationSchema} from "./utils/validationShemas.mjs"
+import { createQueryValidation } from "./utils/queryValidationSchema.mjs";
 
 const app = express()
 app.use(express.json())
@@ -97,8 +99,7 @@ app.get("/api/users/:id", resolveIndexByUserId, (req, res) => {
 
 
 
-app.post("/api/users", [body("username").isString().notEmpty().withMessage("username cannot be empty").isLength({ min: 5, max: 32 }).withMessage("username must be 5-32 characters").isLowercase().withMessage("username must be in lowercase"), 
-body("pod").isString().notEmpty().withMessage("pod must not be empty").isLength({min:3, max:15}).withMessage("pod must be 3 - 15 characters").isLowercase().withMessage("pod must be in lowercase"),], (req, res) => {
+app.post("/api/users", checkSchema(createValidationSchema), (req, res) => {
     const result = validationResult(req)
 
     if(!result.isEmpty()) return res.status(400).send({errors: result.array()})
@@ -112,8 +113,7 @@ body("pod").isString().notEmpty().withMessage("pod must not be empty").isLength(
 
 
 
-app.put("/api/users/:id",[body("username").isString().notEmpty().withMessage("username cannot be empty").isLength({ min: 5, max: 32 }).withMessage("username must be 5-32 characters").isLowercase().withMessage("username must be in lowercase"), 
-body("pod").isString().notEmpty().withMessage("pod must not be empty").isLength({min:3, max:15}).withMessage("pod must be 3 - 15 characters").isLowercase().withMessage("pod must be in lowercase"),], resolveIndexByUserId, (req, res) => {
+app.put("/api/users/:id",checkSchema(createValidationSchema), resolveIndexByUserId, (req, res) => {
     const { findUserIndex } = req;
     const result = validationResult(req)
     if(!result.isEmpty()) return res.status(400).send({errors: result.array()})
