@@ -46,13 +46,6 @@ const mockUsers = [
 
 
 
-const mockProducts = [
-    { name: "Mango", Price: "200", id: 1 },
-    { name: "Banana", Price: "700", id: 2 },
-    { name: "Apples", Price: "1000", id: 3 },
-]
-
-
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 })
@@ -146,27 +139,3 @@ app.delete("/api/users/:id", resolveIndexByUserId, (req, res) => {
     // Respond with a success message
     return res.status(200).json({ message: 'User deleted successfully' });
 });
-
-
-
-app.get("/api/products", (req, res) => {
-    try {
-        if (!res.status(200)) {
-            return res.send("Error fetching api")
-        }
-        return res.status(200).send(mockProducts)
-    } catch (error) {
-        console.log(error);
-    }
-})
-
-
-
-app.get("/api/products/:id", resolveIndexByProductId, (req, res) => {
-    const { findProductIndex } = req
-    const findProduct = mockProducts[findProductIndex]
-
-    if (!findProduct) return res.status(404).send({ message: `This product does not exist` })
-
-    return res.status(200).send(findProduct)
-})
