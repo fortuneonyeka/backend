@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { mockProducts } from "../utils/constants.mjs";
-import { resolveIndexByProductId} from  "../utils/constants.mjs"
-import { createValidationSchema} from "../utils/validationShemas.mjs"
+import { resolveIndexByProductId } from "../utils/constants.mjs"
+import { createValidationSchema } from "../utils/validationShemas.mjs"
 
 
 const router = Router()
