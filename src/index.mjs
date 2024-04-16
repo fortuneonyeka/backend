@@ -1,4 +1,7 @@
 import express from "express";
+import { query, validationResult, body, matchedData, checkSchema} from "express-validator"
+import { createValidationSchema} from "./utils/validationShemas.mjs"
+import { createQueryValidation } from "./utils/queryValidationSchema.mjs";
 
 const app = express()
 app.use(express.json())
@@ -34,12 +37,11 @@ const resolveIndexByProductId = (req, res, next) => {
 }
 
 
-
 const mockUsers = [
-    { username: "fortune", Pod: "developer", id: 1 },
-    { username: "val", Pod: "app service", id: 2 },
-    { username: "bose", Pod: "developer", id: 3 },
-    { username: "mathew", Pod: "developer", id: 4 },
+    { username: "fortune", pod: "developer", id: 1 },
+    { username: "val", pod: "app service", id: 2 },
+    { username: "bose", pod: "developer", id: 3 },
+    { username: "mathew", pod: "developer", id: 4 },
 ]
 
 
@@ -69,7 +71,9 @@ app.get("/", (req, res) => {
 
 
 
-app.get("/api/users", (req, res) => {
+app.get("/api/users", query("filter").isString().notEmpty().withMessage("Must not be empty").isLength({ min: 3, max: 15 }).withMessage("Must be at least 3-10 characters"), (req, res) => {
+    const result = validationResult(req)
+    console.log(result);
     const { query: { filter, value } } = req;
 
     // When filter and value are defined, filter mockUsers
@@ -85,35 +89,51 @@ app.get("/api/users", (req, res) => {
 
 app.get("/api/users/:id", resolveIndexByUserId, (req, res) => {
 
-    const {findUserIndex} = req
-    const findUser = mockUsers[findUserIndex] 
+    const { findUserIndex } = req
+    const findUser = mockUsers[findUserIndex]
+    if (!findUser) return res.status(404).send({ message: 'This user does not exists' })
+
+    return res.status(200).send(findUser)
+})
 
 
 
-app.post("/api/users", (req, res) => {
-    const { body } = req
-    const newUser = { id: mockUsers[mockUsers.length - 1].id + 1, ...body }
+
+app.post("/api/users", checkSchema(createValidationSchema), (req, res) => {
+    const result = validationResult(req)
+
+    if(!result.isEmpty()) return res.status(400).send({errors: result.array()})
+
+    const data = matchedData(req)
+    
+    const newUser = { id: mockUsers[mockUsers.length - 1].id + 1, ...data }
     mockUsers.push(newUser)
     return res.status(201).send(newUser);
 })
 
 
-app.put("/api/users/:id", resolveIndexByUserId, (req, res) => {
-    const { body, findUserIndex } = req;
-    mockUsers[findUserIndex] = { id: mockUsers[findUserIndex].id, ...body }
+
+app.put("/api/users/:id",checkSchema(createValidationSchema), resolveIndexByUserId, (req, res) => {
+    const { findUserIndex } = req;
+    const result = validationResult(req)
+    if(!result.isEmpty()) return res.status(400).send({errors: result.array()})
+
+    const data = matchedData(req)
+
+    mockUsers[findUserIndex] = { id: mockUsers[findUserIndex].id, ...data }
     return res.sendStatus(200)
 })
 
 
 app.patch("/api/users/:id", resolveIndexByUserId, (req, res) => {
     const { body, findUserIndex } = req;
-    mockUsers[findUserIndex] = { ...mockUsers[findUserIndex], ...body}
-        return res.sendStatus(200)
+    mockUsers[findUserIndex] = { ...mockUsers[findUserIndex], ...body }
+    return res.sendStatus(200)
 })
 app.delete("/api/users/:id", resolveIndexByUserId, (req, res) => {
     const { findUserIndex } = req;
 
-  
+
     mockUsers.splice(findUserIndex, 1);
 
     // Update the indices of remaining users in the array
@@ -126,7 +146,6 @@ app.delete("/api/users/:id", resolveIndexByUserId, (req, res) => {
     // Respond with a success message
     return res.status(200).json({ message: 'User deleted successfully' });
 });
-
 
 
 
@@ -143,11 +162,9 @@ app.get("/api/products", (req, res) => {
 
 
 
-
 app.get("/api/products/:id", resolveIndexByProductId, (req, res) => {
-    const {findProductIndex} = req
+    const { findProductIndex } = req
     const findProduct = mockProducts[findProductIndex]
-   
 
     if (!findProduct) return res.status(404).send({ message: `This product does not exist` })
 
