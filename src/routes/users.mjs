@@ -1,9 +1,8 @@
 import { Router } from "express";
 import {query, validationResult, checkSchema, body, matchedData} from "express-validator"
-import { createValidationSchema} from "../utils/validationShemas.mjs"
-import { createQueryValidation } from "../utils/queryValidationSchema.mjs";
+import { createValidationSchema} from "../utils/userValidationShemas.mjs"
 import {mockUsers} from "../utils/constants.mjs"
-import {resolveIndexByUserId} from "../utils/constants.mjs"
+import {resolveIndexByUserId} from "../utils/middleWares.mjs"
 
 
 const router = Router()
@@ -47,9 +46,6 @@ router.post("/api/users", checkSchema(createValidationSchema), (req, res) => {
     mockUsers.push(newUser)
     return res.status(201).send(newUser);
 })
-
-
-
 
 
 router.put("/api/users/:id",checkSchema(createValidationSchema), resolveIndexByUserId, (req, res) => {
