@@ -1,3 +1,7 @@
+import { toInt } from '../utils/helper.mjs';
+
+
+
 export const createValidationSchema = {
     productname:{
         isLength:{
@@ -26,8 +30,9 @@ export const createValidationSchema = {
         notEmpty: {
             errorMessage: 'price must not be empty'
         },
-        isNumeric: {
+        isInt: {
             errorMessage:'price must be a integer'
-        }
+        },
+        toInt
     },
 };

@@ -44,15 +44,6 @@ router.post("/api/products", checkSchema(createValidationSchema), (req, res) => 
 })
 
 
-// router.put("/api/products/:id", resolveIndexByProductId, (req, res) => {
-
-//     const { findProductIndex } = req
-//     const findProduct = mockProducts[findProductIndex]
-//     if (!findProduct) return res.status(404).send({ message: 'This product does not exists' })
-
-//     return res.status(200).send(findProduct)
-// })
-
 
 
 router.put("/api/products/:id",checkSchema(createValidationSchema), resolveIndexByProductId, (req, res) => {
@@ -67,7 +58,7 @@ router.put("/api/products/:id",checkSchema(createValidationSchema), resolveIndex
 })
 
 
-router.patch("/api/products/:id", resolveIndexByProductId, (req, res) => {
+router.patch("/api/products/:id",checkSchema(createValidationSchema), resolveIndexByProductId, (req, res) => {
     const { body, findProductIndex } = req;
     mockProducts[findProductIndex] = { ...mockProducts[findProductIndex], ...body }
     return res.sendStatus(200)

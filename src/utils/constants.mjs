@@ -12,3 +12,6 @@ export const mockProducts = [
     { name: "Banana", price: 700, id: 2 },
     { name: "Apples", price: 1000, id: 3 },
 ]
+
+
+
