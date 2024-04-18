@@ -1,3 +1,6 @@
+import {capitalizeFirstLetter } from '../utils/helper.mjs';
+
+
 export const createValidationSchema = {
     username:{
         isLength:{
@@ -12,6 +15,9 @@ export const createValidationSchema = {
         },
         isString:{
             errorMessage: 'username must be a string'
+        },
+        customSanitizer: {
+            options: (value) => capitalizeFirstLetter(value)
         }
     },
 
@@ -28,6 +34,9 @@ export const createValidationSchema = {
         },
         isString: {
             errorMessage:'Pod must be a string'
+        },
+        customSanitizer: {
+            options: (value) => capitalizeFirstLetter(value)
         }
     },
 };

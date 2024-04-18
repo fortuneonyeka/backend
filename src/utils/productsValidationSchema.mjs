@@ -1,4 +1,4 @@
-import { toInt } from '../utils/helper.mjs';
+import { toInt, capitalizeFirstLetter } from '../utils/helper.mjs';
 
 
 
@@ -16,6 +16,9 @@ export const createValidationSchema = {
         },
         isString:{
             errorMessage: 'product name must be a string'
+        },
+        customSanitizer: {
+            options: (value) => capitalizeFirstLetter(value)
         }
     },
 
