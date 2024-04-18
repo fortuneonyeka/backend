@@ -8,14 +8,11 @@ import { createValidationSchema } from "../utils/productsValidationSchema.mjs"
 const router = Router()
 
 router.get("/api/products", (req, res) => {
-    try {
-        if (!res.status(200)) {
-            return res.send("Error fetching api")
-        }
+    if(req.signedCookies.hello && req.signedCookies.hello === "world") {
         return res.status(200).send(mockProducts)
-    } catch (error) {
-        console.log(error);
     }
+    return res.status(403).send({message:"Sorry, please use the right cookies"})  
+    
 })
 
 
