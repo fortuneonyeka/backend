@@ -3,7 +3,6 @@ import {query, validationResult, checkSchema, body, matchedData} from "express-v
 import { createValidationSchema} from "../utils/userValidationShemas.mjs"
 import {mockUsers} from "../utils/constants.mjs"
 import {resolveIndexByUserId} from "../utils/middleWares.mjs"
-import session from "express-session";
 
 
 const router = Router()
@@ -12,7 +11,6 @@ router.get("/api/users", query("filter").isString().notEmpty().withMessage("Must
     const result = validationResult(req)
     const { query: { filter, value } } = req;
    
-    console.log(req.session.id);
     req.sessionStore.get(req.session.id, (err, sessionData) => {
         if (err) {
             console.log(err);
