@@ -39,4 +39,30 @@ app.get("/api/auth/status", (req, res) => {
     return req.session.user ? res.status(200).send(req.session.user) : res.status(401).send({ message: "Not Authenticated" })
 })
 
+// Initialize the cartItemId counter dynamically
+
+
+app.post("/api/cart", (req, res) => {
+    let cartItemId = req.session.cartItemId || 1;
+    
+  if (!req.session.user) return res.sendStatus(401);
+
+  const { body: item } = req;
+  const { cart } = req.session;
+
+  // Add an incremental id to the item
+  item.id = cartItemId;
+  cartItemId += 1; // Increment cartItemId by 1
+
+  if (cart) {
+    cart.push(item);
+  } else {
+    req.session.cart = [item];
+  }
+
+  // Update cartItemId in the session
+  req.session.cartItemId = cartItemId;
+
+  return res.status(200).send(item);
+});
 
