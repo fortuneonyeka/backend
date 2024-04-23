@@ -66,3 +66,9 @@ app.post("/api/cart", (req, res) => {
   return res.status(200).send(item);
 });
 
+
+app.get("/api/cart", (req, res) => {
+    if(!req.session.user) return res.sendStatus(401)
+
+   return res.send(req.session.cart ?? [])
+})
