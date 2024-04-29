@@ -9,8 +9,15 @@ const router = Router()
 
 router.get("/api/users", query("filter").isString().notEmpty().withMessage("Must not be empty").isLength({ min: 3, max: 15 }).withMessage("Must be at least 3-10 characters"), (req, res) => {
     const result = validationResult(req)
-    console.log(result);
     const { query: { filter, value } } = req;
+   
+    req.sessionStore.get(req.session.id, (err, sessionData) => {
+        if (err) {
+            console.log(err);
+            throw err
+        }
+        console.log(sessionData);
+    });
 
     // When filter and value are defined, filter mockUsers
     // query params
